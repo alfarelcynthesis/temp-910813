@@ -1,0 +1,17 @@
+[MD013]
+line-length = 100
+tables = false
+reflow = true
+reflow-mode = "sentence-per-line"
+
+[MD060]
+# Align tables.
+enabled = true
+style = "aligned-no-space"
+
+[MD063]
+# Title case headers.
+enabled = true
+
+[global]
+exclude = [".git", "LICENSE.md", "**/result", "**/target"]

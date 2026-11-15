@@ -1,0 +1,54 @@
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+highlight = "all"
+workspace-default-features = "allow"
+external-default-features = "allow"
+allow = []
+deny = [
+  { crate = "git2", use-instead = "gix" },
+  { crate = "openssl", use-instead = "rustls" },
+  { crate = "openssl-sys", use-instead = "rustls" },
+  "libssh2-sys",
+  { crate = "cmake", use-instead = "cc" },
+  { crate = "windows", reason = "bloated and unnecessary", use-instead = "ideally inline bindings, practically, windows-sys" },
+]
+skip = []
+skip-tree = [
+  # { crate = "windows-sys", reason = "a foundational crate for many that bumps far too frequently to ever have a shared version" },
+]
+
+[graph]
+targets = []
+all-features = false
+no-default-features = false
+
+[advisories]
+unmaintained = "workspace" # only if the unmaintained crate is a direct dependency
+unsound = "all"            # all crates with greater issues are denied by default
+yanked = "deny"
+ignore = []
+
+[licenses]
+# https://spdx.org/licenses/
+allow = [
+  "MIT",
+  "Unicode-3.0", # for unicode-ident
+  # "Hippocratic-2.1",
+  "LicenseRef-Hippocratic-3.0", # any variant of the hippocratic license v3
+]
+confidence-threshold = 0.8
+exceptions = []
+
+[output]
+feature-depth = 1
+
+[sources]
+unknown-registry = "warn"
+unknown-git = "warn"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
+
+[sources.allow-org]
+github = []
+gitlab = []
