@@ -32,6 +32,12 @@
             cargo-shear # trim unused dependencies
             cargo-seek # instead of opening a web browser, search for crates using a cli
 
+            (writeShellScriptBin "db-connect" ''
+              pushd "$(git rev-parse --show-toplevel)/nix" >/dev/null
+              sudo psql --username postgres 3005_a3
+              popd >/dev/null
+            '')
+
             (writeShellScriptBin "watch-src" ''mprocs "bacon clippy-all --offline --all-features" "bacon test --offline --all-features"'')
             (writeShellScriptBin "update" ''
               pushd "$(git rev-parse --show-toplevel)/nix" >/dev/null
