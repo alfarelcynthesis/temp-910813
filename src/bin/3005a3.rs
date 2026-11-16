@@ -23,61 +23,6 @@ pub struct StudentModel {
     pub enrollment_date: Option<NaiveDate>,
 }
 
-/// Allowed commands.
-enum Command {
-    GetAllStudents,
-    AddStudent,
-    UpdateStudentEmail,
-    DeleteStudent,
-}
-
-/// Parse command from string.
-fn parse_command(string: &str) -> Result<Command> {
-    match string {
-        "get_all" => Ok(Command::GetAllStudents),
-        "add" => Ok(Command::AddStudent),
-        "update_email" => Ok(Command::UpdateStudentEmail),
-        "delete" => Ok(Command::DeleteStudent),
-        _ => bail!("Command does not match!"),
-    }
-}
-
-/// Base cli arg.
-#[derive(Parse)]
-struct CommandArg {
-    /// One of `"get_all"`, `"add"`, `"update_email"`, or `"delete"`.
-    #[pound(default = "get_all", parse = parse_command)]
-    pub command: Command,
-}
-
-/// Args for adding students.
-#[derive(Parse)]
-struct AddStudentArgs {
-    #[pound(flatten)]
-    pub command: CommandArg,
-    pub first_name: String,
-    pub last_name: String,
-    pub email: String,
-    pub enrollment_date: Option<String>,
-}
-
-/// Args for updating student email.
-#[derive(Parse)]
-struct UpdateStudentEmailArgs {
-    #[pound(flatten)]
-    pub command: CommandArg,
-    pub student_id: i32,
-    pub new_email: String,
-}
-
-/// Args for deleting students.
-#[derive(Parse)]
-struct DeleteStudentArgs {
-    #[pound(flatten)]
-    pub command: CommandArg,
-    pub student_id: i32,
-}
-
 /// Async main function, connect to DB and dispatch to appropriate function.
 #[tokio::main]
 async fn main() -> Result {
@@ -85,8 +30,7 @@ async fn main() -> Result {
     let db = env::var("DATABASE_URL").expect("DATABASE_URL env var must be set.");
     let mut conn = match PgConnection::connect(&db).await {
         Err(err) => {
-            println!("Failed to connect to db {err:#}");
-            exit(-1);
+            bail!("Failed to connect to db {err:#}");
         }
         Ok(pool) => pool,
     };
@@ -225,5 +169,60 @@ async fn delete_student(conn: &mut PgConnection, args: DeleteStudentArgs) -> Res
             eprintln!("Failed to delete student: {err:#}");
             Err(err.into())
         }
+    }
+}
+
+/// Allowed commands.
+enum Command {
+    GetAllStudents,
+    AddStudent,
+    UpdateStudentEmail,
+    DeleteStudent,
+}
+
+/// Base cli arg.
+#[derive(Parse)]
+struct CommandArg {
+    /// One of `"get_all"`, `"add"`, `"update_email"`, or `"delete"`.
+    #[pound(default = "get_all", parse = parse_command)]
+    pub command: Command,
+}
+
+/// Args for adding students.
+#[derive(Parse)]
+struct AddStudentArgs {
+    #[pound(flatten)]
+    pub command: CommandArg,
+    pub first_name: String,
+    pub last_name: String,
+    pub email: String,
+    pub enrollment_date: Option<String>,
+}
+
+/// Args for updating student email.
+#[derive(Parse)]
+struct UpdateStudentEmailArgs {
+    #[pound(flatten)]
+    pub command: CommandArg,
+    pub student_id: i32,
+    pub new_email: String,
+}
+
+/// Args for deleting students.
+#[derive(Parse)]
+struct DeleteStudentArgs {
+    #[pound(flatten)]
+    pub command: CommandArg,
+    pub student_id: i32,
+}
+
+/// Parse command from string.
+fn parse_command(string: &str) -> Result<Command> {
+    match string {
+        "get_all" => Ok(Command::GetAllStudents),
+        "add" => Ok(Command::AddStudent),
+        "update_email" => Ok(Command::UpdateStudentEmail),
+        "delete" => Ok(Command::DeleteStudent),
+        _ => bail!("Command does not match!"),
     }
 }

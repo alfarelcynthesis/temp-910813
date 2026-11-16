@@ -5,7 +5,7 @@ The thing that may require the most adjustment is the `DATABASE_URL` - see below
 
 ## Setup
 
-pgadmin does not function on my system (not well maintained for my distro) so the following use the postgres CLI.
+pgadmin does not function on my system (not well maintained for my distro) so the following use the PostgreSQL CLI.
 
 First, open it:
 
@@ -42,6 +42,9 @@ See <https://docs.rs/sqlx/latest/sqlx/postgres/struct.PgConnectOptions.html>.
 # Change depending on where you database is and how you are connecting.
 # This example runs as the postgres user for a db named 3005_a3 with a unix socket in /run/postgresql/.s.PGSQL.5432
 export DATABASE_URL=postgresql://postgres@%2Frun%2Fpostgresql/3005_a3
+
+# This may work if you have tcp access to your database (I do not).
+export DATABASE_URL=postgresql://postgres@localhost/db_name
 ```
 
 Then, in the project directory, compile and run the program.
@@ -59,8 +62,9 @@ cargo run -- --help
 cargo run # or cargo run -- get_all
 cargo run -- add first-name last-name email@email 2026-10-10
 cargo run -- add first-name last-name email@email
-cargo run -- update_email
-cargo run -- delete
+cargo run -- update_email student_id new@email
+cargo run -- delete student_id
 ```
 
 The output is ugly, but should communicate everything.
+The update_email and delete commands will only report failure when the SQL query fails, which does not happen when they simply do nothing.
