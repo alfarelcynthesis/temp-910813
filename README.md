@@ -1,8 +1,5 @@
 # 3005 A3
 
-> - Student #: 101346935
-> - Name: Cynth Jones
-
 This was not tested in the course VM, but should generally work.
 The thing that may require the most adjustment is the `DATABASE_URL` - see below.
 
